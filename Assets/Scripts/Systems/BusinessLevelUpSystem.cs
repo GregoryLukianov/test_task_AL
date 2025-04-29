@@ -1,4 +1,5 @@
-﻿using Leopotam.Ecs;
+﻿using System;
+using Leopotam.Ecs;
 using UnityEngine;
 
 public class BusinessLevelUpSystem : IEcsRunSystem
@@ -6,6 +7,7 @@ public class BusinessLevelUpSystem : IEcsRunSystem
     private EcsFilter<BusinessComponent, BusinessLevelUpRequestComponent> _levelUpRequestFilter = null;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
+    public event Action<int, BusinessConfig> OnBusinessLevelUpEvent;
 
     public void Run()
     {
@@ -13,7 +15,7 @@ public class BusinessLevelUpSystem : IEcsRunSystem
         {
             ref var business = ref _levelUpRequestFilter.Get1(i);
 
-            var businessData = _configProvider.GetBusinessDataById(business.Id);
+            var businessData = _configProvider.GetBusinessConfigById(business.Id);
             if (businessData == null)
             {
                 Debug.Log($"Business config not found for id: {business.Id}");
@@ -25,6 +27,7 @@ public class BusinessLevelUpSystem : IEcsRunSystem
             if (_balanceSystem.TrySpendBalance(nextLevelCost))
             {
                 business.Level++;
+                OnBusinessLevelUpEvent?.Invoke(business.Id,businessData);
             }
             else
             {

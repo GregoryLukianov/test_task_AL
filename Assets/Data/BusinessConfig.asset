@@ -9,77 +9,67 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: dae6ef6fc39d4d8db823149aad114a9a, type: 3}
   m_Name: BusinessConfig
   m_EditorClassIdentifier: Assembly-CSharp::BusinessConfig
   Businesses:
-  - Name: "\u0411\u0438\u0437\u043D\u0435\u0441 1"
-    Id: 1
+  - Id: 1
     StartingLevel: 1
     IncomeDelay: 3
     BasePrice: 3
     BaseIncome: 3
-    Upgrade1:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 1"
-      Price: 50
+    Upgrades:
+    - Price: 50
       IncomeMultiplier: 50
-    Upgrade2:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 2"
-      Price: 400
+      UpgradeType: 0
+    - Price: 400
       IncomeMultiplier: 100
-  - Name: "\u0411\u0438\u0437\u043D\u0435\u0441 2"
-    Id: 2
+      UpgradeType: 1
+  - Id: 2
     StartingLevel: 0
     IncomeDelay: 6
     BasePrice: 40
     BaseIncome: 40
-    Upgrade1:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 1"
-      Price: 1200
+    Upgrades:
+    - Price: 1200
       IncomeMultiplier: 100
-    Upgrade2:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 2"
-      Price: 4000
+      UpgradeType: 0
+    - Price: 4000
       IncomeMultiplier: 200
-  - Name: "\u0411\u0438\u0437\u043D\u0435\u0441 3"
-    Id: 3
+      UpgradeType: 1
+  - Id: 3
     StartingLevel: 0
     IncomeDelay: 10
     BasePrice: 200
     BaseIncome: 200
-    Upgrade1:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 1"
-      Price: 6000
+    Upgrades:
+    - Price: 6000
       IncomeMultiplier: 100
-    Upgrade2:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 2"
-      Price: 20000
+      UpgradeType: 0
+    - Price: 20000
       IncomeMultiplier: 150
-  - Name: "\u0411\u0438\u0437\u043D\u0435\u0441 4"
-    Id: 4
+      UpgradeType: 1
+  - Id: 4
     StartingLevel: 0
     IncomeDelay: 17
     BasePrice: 1000
     BaseIncome: 1000
-    Upgrade1:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 1"
-      Price: 15000
+    Upgrades:
+    - Price: 15000
       IncomeMultiplier: 100
-    Upgrade2:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 2"
-      Price: 50000
+      UpgradeType: 0
+    - Price: 50000
       IncomeMultiplier: 200
-  - Name: "\u0411\u0438\u0437\u043D\u0435\u0441 5"
-    Id: 5
+      UpgradeType: 1
+  - Id: 5
     StartingLevel: 0
     IncomeDelay: 30
     BasePrice: 5000
     BaseIncome: 5000
-    Upgrade1:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 1"
-      Price: 100000
+    Upgrades:
+    - Price: 100000
       IncomeMultiplier: 200
-    Upgrade2:
-      Name: "\u0423\u043B\u0443\u0447\u0448\u0435\u043D\u0438\u0435 2"
-      Price: 500000
+      UpgradeType: 0
+    - Price: 500000
       IncomeMultiplier: 400
+      UpgradeType: 1

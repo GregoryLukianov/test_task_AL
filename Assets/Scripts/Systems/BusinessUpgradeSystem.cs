@@ -1,4 +1,5 @@
-﻿using Leopotam.Ecs;
+﻿using System;
+using Leopotam.Ecs;
 using UnityEngine;
 
 public class BusinessUpgradeSystem : IEcsRunSystem
@@ -7,6 +8,7 @@ public class BusinessUpgradeSystem : IEcsRunSystem
     private EcsFilter<BusinessComponent, BusinessUpgrade2RequestComponent> _upgrade2Filter = null;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
+    public event Action<int, UpgradeType> _onBusinessUpgradedEvent;
 
     public void Run()
     {
@@ -15,13 +17,13 @@ public class BusinessUpgradeSystem : IEcsRunSystem
             ref var business = ref _upgrade1Filter.Get1(i);
             var entity = _upgrade1Filter.GetEntity(i);
 
-            if (business.Level == 0 || business.Upgrade1Purchased)
+            if (business.Level == 0 || business.PurchasedUpgradesDictionary[UpgradeType.Upgrade1])
             {
                 entity.Del<BusinessUpgrade1RequestComponent>();
                 continue;
             }
 
-            var data = _configProvider.GetBusinessDataById(business.Id);
+            var data = _configProvider.GetBusinessConfigById(business.Id);
             if (data == null)
             {
                 Debug.Log($"Business config not found for id: {business.Id}");
@@ -29,8 +31,11 @@ public class BusinessUpgradeSystem : IEcsRunSystem
                 continue;
             }
 
-            if (_balanceSystem.TrySpendBalance(data.Upgrade1.Price))
-                business.Upgrade1Purchased = true;
+            if (_balanceSystem.TrySpendBalance(data.Upgrades[0].Price))
+            {
+                business.PurchasedUpgradesDictionary[UpgradeType.Upgrade1] = true;
+                _onBusinessUpgradedEvent?.Invoke(business.Id, UpgradeType.Upgrade1);
+            }
             else
                 Debug.Log("Not enough balance to buy Upgrade 1!");
 
@@ -42,13 +47,13 @@ public class BusinessUpgradeSystem : IEcsRunSystem
             ref var business = ref _upgrade2Filter.Get1(i);
             var entity = _upgrade2Filter.GetEntity(i);
 
-            if (business.Level == 0 || business.Upgrade2Purchased)
+            if (business.Level == 0 || business.PurchasedUpgradesDictionary[UpgradeType.Upgrade2])
             {
                 entity.Del<BusinessUpgrade2RequestComponent>();
                 continue;
             }
 
-            var data = _configProvider.GetBusinessDataById(business.Id);
+            var data = _configProvider.GetBusinessConfigById(business.Id);
             if (data == null)
             {
                 Debug.Log($"Business config not found for id: {business.Id}");
@@ -56,8 +61,11 @@ public class BusinessUpgradeSystem : IEcsRunSystem
                 continue;
             }
 
-            if (_balanceSystem.TrySpendBalance(data.Upgrade2.Price))
-                business.Upgrade2Purchased = true;
+            if (_balanceSystem.TrySpendBalance(data.Upgrades[1].Price))
+            {
+                business.PurchasedUpgradesDictionary[UpgradeType.Upgrade2]= true;
+                _onBusinessUpgradedEvent?.Invoke(business.Id,UpgradeType.Upgrade2);
+            }
             else
                 Debug.Log("Not enough balance to buy Upgrade 2!");
 

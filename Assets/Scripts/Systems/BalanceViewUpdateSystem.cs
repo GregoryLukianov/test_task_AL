@@ -1,6 +1,6 @@
 ﻿using Leopotam.Ecs;
 
-public class BalanceViewUpdateSystem : IEcsRunSystem
+public class BalanceViewUpdateSystem : IEcsInitSystem
 {
     private BalanceSystem _balanceSystem;
     private BalanceView _balanceView;
@@ -9,8 +9,13 @@ public class BalanceViewUpdateSystem : IEcsRunSystem
     {
         _balanceView = balanceView;
     }
+    
+    public void Init()
+    {
+        _balanceSystem.OnBalanceChangeEvent+=UpdateBalanceText;
+    }
 
-    public void Run()
+    public void UpdateBalanceText()
     {
         _balanceView.SetBalance(_balanceSystem.GetBalance());
     }

@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,28 +16,30 @@ public class BusinessView : MonoBehaviour
     public UpgradeButtonView Upgrade2Button;
     public UpgradeButtonView LevelUpButton;
     private BusinessService _businessService;
-    
-    public void Init(BusinessService businessService)
-    {
-        _businessService = businessService;
 
-        Upgrade1Button.Button.onClick.AddListener(() => _businessService.RequestUpgrade1(BusinessId));
-        Upgrade2Button.Button.onClick.AddListener(() => _businessService.RequestUpgrade2(BusinessId));
-        LevelUpButton.Button.onClick.AddListener(() => _businessService.RequestLevelUp(BusinessId));
+    private Dictionary<UpgradeType, UpgradeButtonView> _upgradeButtons;
+    
+    public void Awake( )
+    {
+        _upgradeButtons = new Dictionary<UpgradeType, UpgradeButtonView>();
+        _upgradeButtons.Add(UpgradeType.Upgrade1, Upgrade1Button);
+        _upgradeButtons.Add(UpgradeType.Upgrade2, Upgrade2Button);
     }
 
     
-    public void UpdateView(BusinessComponent business, BusinessIncomeTimerComponent timer, BusinessConfig.BusinessData config)
+    public void UpdateView(BusinessComponent business, BusinessIncomeTimerComponent timer, BusinessConfig config, BusinessInfo businessInfo)
     {
-        NameText.text = config.Name;
+        NameText.text = businessInfo.Name;
         Timer.fillAmount = timer.CurrentTime / config.IncomeDelay;
         LevelText.text = $"LVL:\n{business.Level}";
 
         float upgradeMultiplier = 0f;
-        if (business.Upgrade1Purchased)
-            upgradeMultiplier += config.Upgrade1.IncomeMultiplier;
-        if (business.Upgrade2Purchased)
-            upgradeMultiplier += config.Upgrade2.IncomeMultiplier;
+        foreach (var keyValue in business.PurchasedUpgradesDictionary)
+        {
+            if(keyValue.Value)
+                upgradeMultiplier += config.Upgrades.Find(
+                    upgrade=>upgrade.UpgradeType== keyValue.Key).IncomeMultiplier;
+        }
 
         float income = business.Level * config.BaseIncome * (1f + upgradeMultiplier/100);
         IncomeText.text = $"Доход:\n{income:F0}$";
@@ -50,34 +53,63 @@ public class BusinessView : MonoBehaviour
         LevelUpButton.Text.text = $"LEVEL UP$\n" +
                                   $"Цена: {nextLevelCost:F0}$";
         
-        if (business.Upgrade1Purchased)
+        
+        foreach (var keyButton in _upgradeButtons)
         {
-            Upgrade1Button.Button.interactable = false;
-            Upgrade1Button.Text.text = $"{config.Upgrade1.Name}\n" +
-                                       $"Доход: + {config.Upgrade1.IncomeMultiplier}%\n" +
-                                       $"Куплено";
-        }
-        else
-        {
-            Upgrade1Button.Button.interactable = true;
-            Upgrade1Button.Text.text = $"{config.Upgrade1.Name}\n" +
-                                       $"Доход: + {config.Upgrade1.IncomeMultiplier}%\n" +
-                                       $"Цена: {config.Upgrade1.Price:F0}$";
+            if (business.PurchasedUpgradesDictionary[keyButton.Key])
+            {
+                Upgrade1Button.Button.interactable = false;
+                Upgrade1Button.Text.text = $"{businessInfo.Upgrades.Find(upgrade => upgrade.UpgradeType ==keyButton.Key).Name}\n" +
+                                           $"Доход: + {config.Upgrades.Find(upgrade => upgrade.UpgradeType ==keyButton.Key).IncomeMultiplier}%\n" +
+                                           $"Куплено";
+            }
+            else
+            {
+                keyButton.Value.Button.interactable = true;
+                keyButton.Value.Text.text = 
+                    $"{businessInfo.Upgrades.Find(upgrade => upgrade.UpgradeType ==keyButton.Key).Name}\n" +
+                    $"Доход: + {config.Upgrades.Find(upgrade => upgrade.UpgradeType ==keyButton.Key).IncomeMultiplier}%\n" +
+                    $"Цена: {config.Upgrades.Find(upgrade => upgrade.UpgradeType ==keyButton.Key).Price:F0}$";
+            }
         }
         
-        if (business.Upgrade2Purchased)
+    }
+
+    public void UpdateLevelText(BusinessComponent business, BusinessConfig config)
+    {
+        LevelText.text = $"LVL:\n{business.Level}";
+        int nextLevel = business.Level + 1;
+        float nextLevelCost = nextLevel * config.BasePrice;
+        LevelUpButton.Text.text = $"LEVEL UP$\n" +
+                                  $"Цена: {nextLevelCost:F0}$";
+    }
+
+    public void UpdateUpgradeText(UpgradeType upgradeType,BusinessConfig config, BusinessInfo businessInfo)
+    {
+        _upgradeButtons[upgradeType].Button.interactable = false;
+        _upgradeButtons[upgradeType].Text.text = 
+            $"{businessInfo.Upgrades.Find(upgrade => upgrade.UpgradeType ==upgradeType).Name}\n" +
+            $"Доход: + {config.Upgrades.Find(upgrade => upgrade.UpgradeType ==upgradeType).IncomeMultiplier}%\n" +
+            "Куплено";
+        
+    }
+
+    public void UpdateIncomeText(BusinessComponent business, BusinessConfig config)
+    {
+        float upgradeMultiplier = 0f;
+        foreach (var keyValue in business.PurchasedUpgradesDictionary)
         {
-            Upgrade2Button.Button.interactable = false;
-            Upgrade2Button.Text.text = $"{config.Upgrade2.Name}\n" +
-                                       $"Доход: + {config.Upgrade2.IncomeMultiplier}%\n" +
-                                       $"Куплено";
+            if(keyValue.Value)
+                upgradeMultiplier += config.Upgrades.Find(
+                    upgrade=>upgrade.UpgradeType== keyValue.Key).IncomeMultiplier;
         }
-        else
-        {
-            Upgrade2Button.Button.interactable = true;
-            Upgrade2Button.Text.text = $"{config.Upgrade2.Name}\n" +
-                                       $"Доход: + {config.Upgrade2.IncomeMultiplier}%\n" +
-                                       $"Цена: {config.Upgrade2.Price:F0}$";
-        }
+
+        float income = business.Level * config.BaseIncome * (1f + upgradeMultiplier/100);
+        IncomeText.text = $"Доход:\n{income:F0}$";
+    }
+
+    public void UpdateTimer(BusinessIncomeTimerComponent timer, BusinessConfig config)
+    {
+        Timer.fillAmount = timer.CurrentTime / config.IncomeDelay;
     }
 }

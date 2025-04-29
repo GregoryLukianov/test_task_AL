@@ -6,6 +6,7 @@ public class BusinessIncomeSystem : IEcsRunSystem
     private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter = null;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
+    private BusinessViewsProvider _viewsProvider;
     
     public void Run()
     {
@@ -18,7 +19,7 @@ public class BusinessIncomeSystem : IEcsRunSystem
             
             ref var timer = ref _businessFilter.Get2(i);
 
-            var businessData = _configProvider.GetBusinessDataById(business.Id);
+            var businessData = _configProvider.GetBusinessConfigById(business.Id);
             if (businessData == null)
             {
                 Debug.Log($"Business config not found for id: {business.Id}");
@@ -26,17 +27,23 @@ public class BusinessIncomeSystem : IEcsRunSystem
             }
 
             timer.CurrentTime += Time.deltaTime;
-
+            _viewsProvider.GetViewById(businessData.Id).UpdateTimer(timer,businessData);
+            
+            
             if (timer.CurrentTime < businessData.IncomeDelay)
                 continue;
 
             timer.CurrentTime = 0f;
-
+            _viewsProvider.GetViewById(businessData.Id).UpdateTimer(timer,businessData);
+            
+            
             float upgradeMultiplier = 0f;
-            if (business.Upgrade1Purchased)
-                upgradeMultiplier += businessData.Upgrade1.IncomeMultiplier;
-            if (business.Upgrade2Purchased)
-                upgradeMultiplier += businessData.Upgrade2.IncomeMultiplier;
+            foreach (var keyValue in business.PurchasedUpgradesDictionary)
+            {
+                if(keyValue.Value)
+                    upgradeMultiplier += businessData.Upgrades.Find(
+                        upgrade=>upgrade.UpgradeType== keyValue.Key).IncomeMultiplier;
+            }
 
             float income = business.Level * businessData.BaseIncome * (1f + upgradeMultiplier/100);
 

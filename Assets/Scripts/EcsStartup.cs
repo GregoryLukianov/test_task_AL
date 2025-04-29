@@ -1,4 +1,6 @@
-﻿using Leopotam.Ecs;
+﻿using System;
+using System.Collections.Generic;
+using Leopotam.Ecs;
 using UnityEngine;
 
 public class EcsStartup : MonoBehaviour
@@ -11,29 +13,40 @@ public class EcsStartup : MonoBehaviour
     [SerializeField] private BusinessConfigProvider _businessConfigProvider;
     [SerializeField] private BusinessViewsProvider _businessViewsProvider;
 
+    private Action _applicationQuit;
+    
+
     private void Start()
     {
         _world = new EcsWorld();
         _systems = new EcsSystems(_world);
 
         var balanceSystem = new BalanceSystem();
+        var businessUpgradeSystem = new BusinessUpgradeSystem();
+        var businessLevelUpSystem = new BusinessLevelUpSystem();
+        var saveSystem = new SaveLoadSystem();
+        _applicationQuit = saveSystem.Save;
         _systems
             .Add(new BusinessIncomeSystem())
-            .Add(new BusinessUpgradeSystem())
-            .Add(new BusinessLevelUpSystem())
+            .Add(businessUpgradeSystem)
+            .Add(businessLevelUpSystem)
             .Add(new BusinessViewUpdateSystem())
             .Add(new BalanceViewUpdateSystem(_balanceView))
             .Add(new BusinessServiceStartupSystem())
+            .Add(saveSystem)
             .Add(balanceSystem)
             .Inject(_businessConfigProvider)
             .Inject(_businessViewsProvider)
             .Inject(new BusinessService())
-            .Inject(balanceSystem);
+            .Inject(balanceSystem)
+            .Inject(businessUpgradeSystem)
+            .Inject(businessLevelUpSystem);
             
         
 
         
         CreateInitialEntities();
+        DataManager.LoadData();
 
         _systems.Init();
     }
@@ -66,10 +79,23 @@ public class EcsStartup : MonoBehaviour
             ref var businessComponent = ref businessEntity.Get<BusinessComponent>();
             businessComponent.Id = businessData.Id;
             businessComponent.Level = businessData.StartingLevel;
-            businessComponent.Upgrade1Purchased = false;
-            businessComponent.Upgrade2Purchased = false;
+            businessComponent.PurchasedUpgradesDictionary = new Dictionary<UpgradeType, bool>
+            {
+                { UpgradeType.Upgrade1, false },
+                { UpgradeType.Upgrade2, false }
+            };
 
             businessEntity.Get<BusinessIncomeTimerComponent>();
         }
     }
+    
+    private void OnApplicationQuit()
+    {
+        _applicationQuit.Invoke();
+    }
+
+    // private void OnApplicationPause(bool pauseStatus)
+    // {
+    //     _applicationQuit.Invoke();
+    // }
 }

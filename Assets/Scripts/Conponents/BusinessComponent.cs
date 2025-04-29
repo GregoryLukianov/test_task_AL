@@ -1,7 +1,8 @@
-﻿public struct BusinessComponent
+﻿using System.Collections.Generic;
+
+public struct BusinessComponent
 {
     public int Id;
     public int Level;
-    public bool Upgrade1Purchased;
-    public bool Upgrade2Purchased;
+    public Dictionary<UpgradeType, bool> PurchasedUpgradesDictionary;
 }
