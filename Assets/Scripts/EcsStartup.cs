@@ -93,9 +93,4 @@ public class EcsStartup : MonoBehaviour
     {
         _applicationQuit.Invoke();
     }
-
-    // private void OnApplicationPause(bool pauseStatus)
-    // {
-    //     _applicationQuit.Invoke();
-    // }
 }

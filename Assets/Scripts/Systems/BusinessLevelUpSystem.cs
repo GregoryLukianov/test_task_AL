@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BusinessLevelUpSystem : IEcsRunSystem
 {
-    private EcsFilter<BusinessComponent, BusinessLevelUpRequestComponent> _levelUpRequestFilter = null;
+    private EcsFilter<BusinessComponent, BusinessLevelUpRequestComponent> _levelUpRequestFilter;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
     public event Action<int, BusinessConfig> OnBusinessLevelUpEvent;

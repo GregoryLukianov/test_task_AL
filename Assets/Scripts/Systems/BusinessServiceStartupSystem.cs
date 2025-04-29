@@ -2,8 +2,8 @@
 
 public class BusinessServiceStartupSystem : IEcsInitSystem
 {
-    private BusinessService _businessService = null;
-    private EcsFilter<BusinessComponent> _businessFilter = null;
+    private BusinessService _businessService;
+    private EcsFilter<BusinessComponent> _businessFilter;
 
     public void Init()
     {

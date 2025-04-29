@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BusinessViewUpdateSystem : IEcsInitSystem
 {
-    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter = null;
+    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter;
 
     private BusinessViewsProvider _viewsProvider;
     private BusinessConfigProvider _configProvider;
@@ -13,7 +13,7 @@ public class BusinessViewUpdateSystem : IEcsInitSystem
 
     public void Init()
     {
-        _businessUpgradeSystem._onBusinessUpgradedEvent += UpdateUpgradeText;
+        _businessUpgradeSystem.OnBusinessUpgradedEvent += UpdateUpgradeText;
         _businessLevelUpSystem.OnBusinessLevelUpEvent += UpdateLevelText;
         foreach (var i in _businessFilter)
         {

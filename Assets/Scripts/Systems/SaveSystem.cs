@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Leopotam.Ecs;
 
 public class SaveLoadSystem: IEcsInitSystem
 {
-    private EcsFilter<BalanceComponent> _balanceFilter = null;
-    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter = null;
+    private EcsFilter<BalanceComponent> _balanceFilter;
+    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter;
     private BusinessViewsProvider _viewsProvider;
     private BusinessConfigProvider _configProvider;
     

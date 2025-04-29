@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BusinessUpgradeSystem : IEcsRunSystem
 {
-    private EcsFilter<BusinessComponent, BusinessUpgrade1RequestComponent> _upgrade1Filter = null;
-    private EcsFilter<BusinessComponent, BusinessUpgrade2RequestComponent> _upgrade2Filter = null;
+    private EcsFilter<BusinessComponent, BusinessUpgrade1RequestComponent> _upgrade1Filter;
+    private EcsFilter<BusinessComponent, BusinessUpgrade2RequestComponent> _upgrade2Filter;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
-    public event Action<int, UpgradeType> _onBusinessUpgradedEvent;
+    public event Action<int, UpgradeType> OnBusinessUpgradedEvent;
 
     public void Run()
     {
@@ -34,7 +34,7 @@ public class BusinessUpgradeSystem : IEcsRunSystem
             if (_balanceSystem.TrySpendBalance(data.Upgrades[0].Price))
             {
                 business.PurchasedUpgradesDictionary[UpgradeType.Upgrade1] = true;
-                _onBusinessUpgradedEvent?.Invoke(business.Id, UpgradeType.Upgrade1);
+                OnBusinessUpgradedEvent?.Invoke(business.Id, UpgradeType.Upgrade1);
             }
             else
                 Debug.Log("Not enough balance to buy Upgrade 1!");
@@ -64,7 +64,7 @@ public class BusinessUpgradeSystem : IEcsRunSystem
             if (_balanceSystem.TrySpendBalance(data.Upgrades[1].Price))
             {
                 business.PurchasedUpgradesDictionary[UpgradeType.Upgrade2]= true;
-                _onBusinessUpgradedEvent?.Invoke(business.Id,UpgradeType.Upgrade2);
+                OnBusinessUpgradedEvent?.Invoke(business.Id,UpgradeType.Upgrade2);
             }
             else
                 Debug.Log("Not enough balance to buy Upgrade 2!");

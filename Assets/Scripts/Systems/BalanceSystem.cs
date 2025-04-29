@@ -3,7 +3,7 @@ using Leopotam.Ecs;
 
 public class BalanceSystem : IEcsInitSystem
 {
-    private EcsFilter<BalanceComponent> _balanceFilter = null;
+    private EcsFilter<BalanceComponent> _balanceFilter;
     private BalanceComponent _balanceComponent;
     public event Action OnBalanceChangeEvent;
 

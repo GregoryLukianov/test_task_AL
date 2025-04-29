@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BusinessIncomeSystem : IEcsRunSystem
 {
-    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter = null;
+    private EcsFilter<BusinessComponent, BusinessIncomeTimerComponent> _businessFilter;
     private BusinessConfigProvider _configProvider;
     private BalanceSystem _balanceSystem;
     private BusinessViewsProvider _viewsProvider;
