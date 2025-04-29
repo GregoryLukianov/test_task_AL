@@ -93,4 +93,11 @@ public class EcsStartup : MonoBehaviour
     {
         _applicationQuit.Invoke();
     }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+#if !UNITY_EDITOR
+        _applicationQuit.Invoke();
+#endif
+    }
 }

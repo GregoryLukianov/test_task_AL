@@ -4,18 +4,16 @@ using Leopotam.Ecs;
 public class BalanceSystem : IEcsInitSystem
 {
     private EcsFilter<BalanceComponent> _balanceFilter;
-    private BalanceComponent _balanceComponent;
     public event Action OnBalanceChangeEvent;
 
     public void Init()
     {
-        _balanceComponent = _balanceFilter.Get1(0);
         OnBalanceChangeEvent?.Invoke();
     }
 
     public float GetBalance()
     {
-        return _balanceComponent.Value;
+        return _balanceFilter.Get1(0).Value;
     }
 
     public void AddBalance(float amount)
@@ -23,14 +21,14 @@ public class BalanceSystem : IEcsInitSystem
         if(amount<0)
             return;
         
-        ref var balance = ref _balanceComponent;
+        ref var balance = ref _balanceFilter.Get1(0);
         balance.Value += amount;
         OnBalanceChangeEvent?.Invoke();
     }
 
     public bool TrySpendBalance(float amount)
     {
-        ref var balance = ref _balanceComponent;
+        ref var balance = ref _balanceFilter.Get1(0);
         if (balance.Value >= amount)
         {
             balance.Value -= amount;
